@@ -11,7 +11,7 @@ import './styles.css';
 
 const googleTrackingId = process.env.GOOGLE_TRACKING_ID || '';
 const feedBaseUrl = process.env.FEED_BASE_URL || '';
-const feedUrl = `${feedBaseUrl}/api/feed.js`;
+const feedUrl = `${feedBaseUrl}/api/news/feed.js`;
 
 ReactGA.initialize(googleTrackingId);
 
