@@ -5,3 +5,60 @@
 .main-title {
   margin-top: 4rem;
 }
+
+.time-ago,
+.source {
+  white-space: nowrap;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0 -2%;
+}
+
+.list-item {
+  margin-bottom: 3rem;
+  width: 100%;
+}
+
+.list-item-title {
+  display: block;
+  font-size: 2rem;
+  line-height: 1.25;
+}
+
+.list-item-image {
+  background: #d4d4d4;
+  padding: 1px;
+  margin-bottom: 1rem;
+}
+
+.list-item-source {
+  color: #606c76;
+  font-size: 1.2rem;
+}
+
+@media screen and (min-width: 600px) {
+  .list-item {
+    width: 46%;
+    margin: 0 2% 3rem;
+  }
+}
+
+@media screen and (min-width: 960px) {
+  .list {
+    margin: 0 -1%;
+  }
+
+  .list-item-title {
+    font-size: 1.75rem;
+    line-height: 1.4;
+  }
+
+  .list-item {
+    width: 23%;
+    margin: 0 1% 3rem;
+  }
+}

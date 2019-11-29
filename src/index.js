@@ -5,13 +5,19 @@ import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
 import TimeAgo from 'react-timeago'
 import axios from 'axios';
+import Img, { CloudimageProvider } from 'react-cloudimage-responsive';
 
+import placeholderImage from './placeholder.png';
 import 'milligram';
 import './styles.css';
 
 const googleTrackingId = process.env.GOOGLE_TRACKING_ID || '';
 const feedBaseUrl = process.env.FEED_BASE_URL || '';
 const feedUrl = `${feedBaseUrl}/api/news/feed.js`;
+
+const cloudimageConfig = {
+  token: process.env.CLOUDIMAGE_TOKEN,
+};
 
 ReactGA.initialize(googleTrackingId);
 
@@ -41,7 +47,7 @@ const App = () => {
         </div>
         <div className="row">
           <div className="column">
-            <h1 className="main-title" style={{ fontSize: '200%' }}>Today's cycling news</h1>
+            <h1 className="main-title" style={{ fontSize: '200%' }}>Today's Cycling News</h1>
           </div>
         </div>
       </header>
@@ -50,7 +56,7 @@ const App = () => {
 
           {loading && (
             <div>
-              <p>fetching news...</p>
+              <p>Fetching news...</p>
             </div>
           )}
 
@@ -60,45 +66,56 @@ const App = () => {
             </div>
           )}
     
-          <div>
-            <ul
-              style={{
-                listStylePosition: 'outside',
-                marginLeft: '16px',
-              }}
-            >
+          <CloudimageProvider config={cloudimageConfig}>
+            <ul className="list">
               {data.length > 0 && data.map(
                 ({
                   title,
                   url,
                   source,
                   sourceUrl,
+                  image,
                   time,
                 }) => (
-                  <li key={url}>
+                  <li className="list-item" key={url}>
 
-                    <div>
+                    <div className="list-item-image">
                       <ReactGA.OutboundLink
                         eventLabel={url}
                         to={url}
                         target="_blank"
                         rel="noreferrer noopener"
+                        style={{display: 'block'}}
                       >
-                        {title}
+                        {image && image !== 'none' ? (
+                          <Img src={image} size="320x180" operation="crop" />
+                        ) : (
+                          <img style={{ display: 'block', width: '100%' }} src={placeholderImage} />
+                        )}
+                        
                       </ReactGA.OutboundLink>
-                      {' '}
-                      {time && (
-                        <small>
-                          <TimeAgo date={time} />
-                        </small>
-                      )}
                     </div>
+
+                    <ReactGA.OutboundLink
+                      className="list-item-title"
+                      eventLabel={url}
+                      to={url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {title}
+                    </ReactGA.OutboundLink>
+                    {source && time && (
+                      <small className="list-item-source">
+                        <TimeAgo date={time} />, {source}
+                      </small>
+                    )}
                   </li>
                 )
               )}
             </ul>
 
-          </div>
+          </CloudimageProvider>
         </div>
       </div>
     </div>
