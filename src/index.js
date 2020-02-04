@@ -47,7 +47,7 @@ const App = () => {
         </div>
         <div className="row">
           <div className="column">
-            <h1 className="main-title" style={{ fontSize: '200%' }}>Today's Cycling News</h1>
+            <h1 className="main-title">Today&rsquo;s <nobr>Cycling News</nobr></h1>
           </div>
         </div>
       </header>
@@ -95,21 +95,22 @@ const App = () => {
                         
                       </ReactGA.OutboundLink>
                     </div>
-
-                    <ReactGA.OutboundLink
-                      className="list-item-title"
-                      eventLabel={url}
-                      to={url}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {title}
-                    </ReactGA.OutboundLink>
-                    {source && time && (
-                      <small className="list-item-source">
-                        <TimeAgo date={time} />, {source}
-                      </small>
-                    )}
+                    <div className="list-item-title">
+                      <ReactGA.OutboundLink
+                        className="list-item-link"
+                        eventLabel={url}
+                        to={url}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        {title}
+                      </ReactGA.OutboundLink>
+                      {source && time && (
+                        <small className="list-item-source">
+                          <TimeAgo date={time} />, {source}
+                        </small>
+                      )}
+                    </div>
                   </li>
                 )
               )}
