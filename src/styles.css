@@ -8,7 +8,6 @@ body {
 }
 
 .main-title {
-  color: #454545;
   font-size: 4rem;
   font-weight: 700;
   letter-spacing: -2px;
@@ -59,7 +58,7 @@ body {
 
 .list-item-source {
   color: #303030;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   text-transform: uppercase;
 }
 
