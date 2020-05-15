@@ -1,41 +1,59 @@
-import React, { useEffect } from 'react';
+require('dotenv').config();
+
+import React, { useState } from 'react';
 import ReactGA from 'react-ga';
 import TimeAgo from 'react-timeago';
-import { motion, useAnimation } from 'framer-motion';
+import { motion } from 'framer-motion';
+import axios from 'axios';
+import useSWR, { useSWRPages } from 'swr';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import Image from './Image';
+import Message from './Message';
 
-const NewsList = ({ data = [] }) => {
-  const listItemAnimation = useAnimation();
+const feedBaseUrl = process.env.FEED_BASE_URL || '';
+const feedUrl = `${feedBaseUrl}/api/news/feed`;
+const pageSize = 24;
 
-  const startListItemAnimation = () => {
-    listItemAnimation.start(i => ({
-      y: 0,
-      opacity: 1,
-      transition: {
-        ease: 'easeOut',
-        duration: 0.5,
-        delay: i * 0.1 + 1,
-      },
-    }));  
-  };
+const NoNewsMessage = () => (
+  <Message>
+    <p>No news at the moment, check back later!</p>
+  </Message>
+);
+
+const ErrorMessage = () => (
+  <Message>
+    <p>There was an error loading the news, <a href="/news">please try again</a>.</p>
+  </Message>
+);
+
+const NewsList = () => {
+  const [initialLoad, setInitialLoad ] = useState(true);
 
   const renderListItems = ({
+    article_id,
     title,
     url,
     source,
-    sourceUrl,
     image,
-    time,
+    published,
   }, i) => (
     <motion.li
+      key={article_id}
       className="list-item"
-      key={`list-item.${i}`}
       custom={i}
-      initial={{ y: 50, opacity: 0 } }
-      animate={listItemAnimation}
+      initial={{ y: 50, opacity: 0 }}
+      animate={{
+        y: 0,
+        opacity: 1,
+        transition: {
+          ease: 'easeOut',
+          duration: 0.5,
+          delay: i * 0.1 + 1,
+        },
+      }}
+      exit={{ y: 50, opacity: 0 }}
     >
-
       <div className="list-item-image">
         <ReactGA.OutboundLink
           eventLabel={url}
@@ -57,23 +75,83 @@ const NewsList = ({ data = [] }) => {
         >
           {title}
         </ReactGA.OutboundLink>
-        {source && time && (
+        {source && published && (
           <small className="list-item-source">
-            <TimeAgo date={time} />, {source}
+            <TimeAgo date={published} />, {source.title}
           </small>
         )}
       </div>
     </motion.li>
   );
 
-  useEffect(() => {
-    startListItemAnimation();
-  }, [data]);
+  const {
+    pages,
+    isLoadingMore,
+    isReachingEnd,
+    loadMore,
+    isEmpty,
+  } = useSWRPages(
+    'news-list',
+
+    ({ offset, withSWR }) => {
+      const fetcher = url => axios.get(url).then(response => 
+        response.status === 200 ? response.data : []
+      );
+
+      const options = {
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+        onSuccess: () => {
+          setInitialLoad(false);
+        }
+      };
+
+      const { data, error } = withSWR(
+        useSWR(`${feedUrl}?offset=${offset || 0}&pageSize=${pageSize}`, fetcher, options),
+      );
+      
+      if (error) throw new Error(error);
+      if (!data) return null;
+
+      return data.map(renderListItems);
+    },
+
+    (SWR, index) => {
+      if (SWR.data && SWR.data.length < pageSize) return null;
+      return index + 1;
+    },
+  );
 
   return (
-    <ul className="list">
-    {data.map(renderListItems)}
-    </ul>
+    <div>
+      {isEmpty && <NoNewsMessage />}
+
+      <ErrorBoundary FallbackComponent={ErrorMessage}>
+        <ul className="list">
+        {pages}
+        </ul>
+      </ErrorBoundary>
+
+      {pages && !initialLoad && !isEmpty && (
+        <div
+          style={{
+            textAlign: 'center',
+          }}
+        >
+          <button
+            className="button button-outline"
+            onClick={loadMore}
+            disabled={isReachingEnd || isLoadingMore}
+            style={{
+              minWidth: '175px',
+              marginTop: '20px',
+            }}
+          >
+            {isLoadingMore ? 'loading' : isReachingEnd ? 'end' : 'load more'}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
