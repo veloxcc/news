@@ -84,3 +84,22 @@ body {
     margin: 0 1% 3rem;
   }
 }
+
+.placeholder-image {
+  position: relative;
+  padding-bottom: calc(100%  / (16/9));
+}
+
+.placeholder-image-container {
+  align-items: center;
+  background: #eee;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  stroke: #ddd;
+  fill: #ddd;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
