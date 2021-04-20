@@ -10,7 +10,7 @@ const cloudimageConfig = {
 const Image = ({ src }) => (
   <CloudimageProvider config={cloudimageConfig}>
     {src && src !== 'none' ? (
-      <Img src={src} size="320x180" operation="crop" />
+      <Img src={src} ratio={16/9} />
     ) : (
       <div className="placeholder-image">
         <div className="placeholder-image-container">

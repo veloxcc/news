@@ -3,7 +3,8 @@ require('dotenv').config();
 import React, { useState } from 'react';
 import ReactGA from 'react-ga';
 import TimeAgo from 'react-timeago';
-import { motion } from 'framer-motion';
+import Skeleton from 'react-loading-skeleton';
+
 import axios from 'axios';
 import useSWR, { useSWRPages } from 'swr';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -38,21 +39,9 @@ const NewsList = () => {
     image,
     published,
   }, i) => (
-    <motion.li
+    <li
       key={article_id}
       className="list-item"
-      custom={i}
-      initial={{ y: 50, opacity: 0 }}
-      animate={{
-        y: 0,
-        opacity: 1,
-        transition: {
-          ease: 'easeOut',
-          duration: 0.5,
-          delay: i * 0.1 + 1,
-        },
-      }}
-      exit={{ y: 50, opacity: 0 }}
     >
       <div className="list-item-image">
         <ReactGA.OutboundLink
@@ -81,8 +70,37 @@ const NewsList = () => {
           </small>
         )}
       </div>
-    </motion.li>
+    </li>
   );
+
+  const renderSkeletonItem = index => (
+    <li
+      key={index}
+      className="list-item"
+    >
+      <div className="list-item-image">
+        <div className="placeholder-image">
+          <div className="placeholder-image-container"></div>
+        </div>
+      </div>
+      <div className="list-item-title">
+        <div className="list-item-link">
+          <Skeleton count={2} />
+        </div>
+        <small className="list-item-source">
+          <Skeleton />
+        </small>
+      </div>
+    </li>
+  );
+
+  const renderSkeleton = () => {
+    const items = [];
+    for (let i = 0; i < 16; i++) {
+      items.push(renderSkeletonItem(i));
+    }
+    return <ul className="list">{items}</ul>;
+  };
 
   const {
     pages,
@@ -131,6 +149,8 @@ const NewsList = () => {
         {pages}
         </ul>
       </ErrorBoundary>
+
+      {initialLoad && renderSkeleton()}
 
       {pages && !initialLoad && !isEmpty && (
         <div
