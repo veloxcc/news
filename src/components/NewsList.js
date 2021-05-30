@@ -43,33 +43,31 @@ const NewsList = () => {
       key={article_id}
       className="list-item"
     >
-      <div className="list-item-image">
-        <ReactGA.OutboundLink
-          eventLabel={url}
-          to={url}
-          target="_blank"
-          rel="noreferrer noopener"
-          style={{display: 'block'}}
-        >
-          <Image src={image} />           
-        </ReactGA.OutboundLink>
-      </div>
-      <div className="list-item-title">
-        <ReactGA.OutboundLink
-          className="list-item-link"
-          eventLabel={url}
-          to={url}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
+      <ReactGA.OutboundLink
+        className="list-item-link"
+        eventLabel={url}
+        to={url}
+        target="_blank"
+        rel="noreferrer noopener"
+        style={{display: 'block'}}
+      >
+        <div className="list-item-image">
+          <Image src={image} />
+        </div>
+        <div className="list-item-title">
           {title}
-        </ReactGA.OutboundLink>
-        {source && published && (
-          <small className="list-item-source">
-            <TimeAgo date={published} />, {source.title}
-          </small>
-        )}
-      </div>
+        </div>
+      </ReactGA.OutboundLink>
+      {published && (
+        <small className="list-item-meta">
+          <TimeAgo date={published} />
+        </small>
+      )}
+      {source && (
+        <small className="list-item-meta">
+          {source.title}
+        </small>
+      )}
     </li>
   );
 
